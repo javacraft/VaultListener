@@ -15,7 +15,7 @@ INSTALLATION
 CONFIGURATION
 
 If VaultListener does not find its properties file, it will create a default version, that pays 30
-units of currency whenever a player votes. It also create a default acknowledgment message and payment
+units of currency whenever a player votes. It also creates a default acknowledgment message and payment
 notification message.
 
 SAMPLE PROPERTIES FILE
@@ -23,16 +23,21 @@ SAMPLE PROPERTIES FILE
 reward_amount=30.0
 confirm_msg=Thanks for voting on {SERVICE}\!
 payment_msg={AMOUNT} has been added to your {ECONOMY} balance.
-
+debug=false
 
 CONFIGURATION ITEMS
 
 reward_amount - the number of currency units to pay for each vote.
-confirm_msg - the confirmation message send to the player (if they are online). In addition a general
+confirm_msg - the confirmation message sent to the player (if they are online). In addition a general
               message is also broadcast by Votifier when a vote is received (cannot be changed here).
 payment_msg - payment confirmation message. This message will only be displayed if Vault finds a
               suitable economy plugin and the player has a valid economy account. If the account
               does not exist, most economy plugins will create it.
+debug       - If set to true, VoteListener will a copy of all messages to the server log. Use this
+              to test the format of custom messages. It should be noted that not all voting servers
+              cast a vote during a connection test. Currently, Minestatus is the only one known that
+              sends a mock vote with the IGN of 'Test Notification'. Other voting servers only test
+              the ability to connect, not vote.
 
 Please note that the exclamation point ('!') has special meaning in properties files and must be
 escaped if used within a string. For for information on properties file see
@@ -40,8 +45,9 @@ escaped if used within a string. For for information on properties file see
 
 MESSAGE TOKENS
 
-Custom message can include three different tokens signified by curly brackets. They are:
+Custom message can include four different tokens signified by curly brackets. They are:
 
-{SERVICE} - the name of the voting server, e.g. Minestatus
-{AMOUNT} - the configured amount to be paid for each vote.
+{AMOUNT}  - the configured amount to be paid for each vote.
 {ECONOMY} - the name of the economy plugin used to make payments.
+{SERVICE} - the name of the voting server, e.g. Minestatus
+{IGN}     - The in-game-name used by the voter.
