@@ -9,13 +9,14 @@ INSTALLATION
  3) Place a copy of VaultListener.class into the listener folder found inside Votifier's data folder.
     Note: If you changed the default location of Votifier listeners in its config.yml then you need to
     put the class there.
- 4) Place a copy of VaultListener.properties inside Votifier's data folder (not inside the listener folder).
+ 4) Place a copy of VaultListener.properties inside Votifier's data folder (not inside the listener
+    folder).
 
 CONFIGURATION
 
-If VaultListener does not find its properties file, it will create a default version, that pays 30 units of
-currency whenever a player votes. It also create a default acknowledgment message and payment notification
-message.
+If VaultListener does not find its properties file, it will create a default version, that pays 30
+units of currency whenever a player votes. It also create a default acknowledgment message and payment
+notification message.
 
 SAMPLE PROPERTIES FILE
 
@@ -27,14 +28,15 @@ payment_msg={AMOUNT} has been added to your {ECONOMY} balance.
 CONFIGURATION ITEMS
 
 reward_amount - the number of currency units to pay for each vote.
-confirm_msg - the confirmation message send to the player (if they are online). In addition a general message
-              is also broadcast by Votifier when a vote is received (cannot be changed here).
-payment_msg - payment confirmation message. This message will only be displayed if Vault finds a suitable
-              economy plugin and the player has a valid economy account. If the account does not exist,
-              most economy plugins will create it.
+confirm_msg - the confirmation message send to the player (if they are online). In addition a general
+              message is also broadcast by Votifier when a vote is received (cannot be changed here).
+payment_msg - payment confirmation message. This message will only be displayed if Vault finds a
+              suitable economy plugin and the player has a valid economy account. If the account
+              does not exist, most economy plugins will create it.
 
-Please note that the exclamation point ( '!' ) has special meaning in properties files and must be escaped
-if used within a string. For for information on properties file see http://en.wikipedia.org/wiki/.properties
+Please note that the exclamation point ('!') has special meaning in properties files and must be
+escaped if used within a string. For for information on properties file see
+     http://en.wikipedia.org/wiki/.properties
 
 MESSAGE TOKENS
 
