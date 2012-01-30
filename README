@@ -5,10 +5,10 @@ iConomy 4-6, BOSEconomy 6-7, EssentialsEco, 3Co, MultiCurrency, MineConomy, eWal
 
 
 REVISION HISTORY
-
-v1.1 - 01/29/12 - Added broadcast message option that will send a configurable message to all
-                  online players.
-v1.0 - 12/06/11 - Initial release.
+v1.1.1 - 01/30/12 - Added basic chat color
+v1.1   - 01/29/12 - Added broadcast message option that will send a configurable message to all
+                    online players.
+v1.0   - 12/06/11 - Initial release.
 
 
 INSTALLATION
@@ -60,6 +60,22 @@ debug         - If set to true, VaultListener will send a copy of all messages t
 Please note that the exclamation point ('!') has special meaning in properties files and must
 be escaped if used within a string. For for information on properties file see
      http://en.wikipedia.org/wiki/.properties
+     
+     
+MESSAGE COLORS
+
+All configurable messages support basic Bukkit chat colors. To change colors, insert the
+appropriate color tag.
+
+     &0 - BLACK          &1 - DARK BLUE      &2 - DARK_GREEN     &3 - DARK AQUA
+     &4 - DARK_RED       &5 - DARK PURPLE    &6 - GOLD           &7 - GRAY
+     &8 - DARK GRAY      &9 - BLUE           &A - GREEN          &B - AQUA
+     &C - RED            &D - LIGHT PURPLE   &E - YELLOW         &F - WHITE
+
+For example, the following broadcast message would be displayed in green, but display the
+the player's IGN in gold
+
+      broadcast_msg=&AThe server was voted for by &6{IGN}&A. Thank you.
 
 
 MESSAGE TOKENS

@@ -23,7 +23,7 @@ import net.milkbowl.vault.economy.EconomyResponse.ResponseType;
  * 
  */
 public class VaultListener implements VoteListener {
-	private static String	version		= "1.1";
+	private static String	version		= "1.1.1";
 	private static Logger	logger		= Logger.getLogger( "VaultListener" );
 	private static String	PROP_FILE	= "VaultListener.properties";
 	private static String	VL_ID		= "[Votifier][VaultListener " + version + "]";
@@ -208,6 +208,7 @@ public class VaultListener implements VoteListener {
 		msg = msg.replace( "{AMOUNT}", Double.toString( amount ) );
 		msg = msg.replace( "{ECONOMY}", (econ != null) ? econ.getName()
 				: "UNKNOWN" );
+		msg = msg.replaceAll( "(?i)&([0-9A-F])", "\u00A7$1" );
 		return msg;
 	}
 
