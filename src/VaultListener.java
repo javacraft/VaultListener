@@ -23,7 +23,7 @@ import net.milkbowl.vault.economy.EconomyResponse.ResponseType;
  * 
  */
 public class VaultListener implements VoteListener {
-	private static String	version		= "1.0";
+	private static String	version		= "1.1";
 	private static Logger	logger		= Logger.getLogger( "VaultListener" );
 	private static String	PROP_FILE	= "VaultListener.properties";
 	private static String	VL_ID		= "[Votifier][VaultListener " + version + "]";
@@ -44,6 +44,12 @@ public class VaultListener implements VoteListener {
 	// Debug Flag
 	private static String	PK_DEBUG	= "debug";
 	private boolean			debug		= false;
+	
+	// Broadcast message
+	private static String	PK_BCAST	= "broadcast";
+	private boolean			bCastFlag	= true;
+	private static String	PK_BCASTMSG	= "broadcast_msg";
+	private String			bCastMsg	= "The server was voted for by {IGN}!";
 
 	private Economy			econ		= null;
 	private Votifier		plugin		= null;
@@ -96,6 +102,8 @@ public class VaultListener implements VoteListener {
 				props.setProperty( PK_AMT, Double.toString( amount ) );
 				props.setProperty( PK_VMSG, confirmMsg );
 				props.setProperty( PK_PMSG, paymentMsg );
+				props.setProperty( PK_BCAST, ""+bCastFlag );
+				props.setProperty( PK_BCASTMSG, bCastMsg );
 
 				FileWriter fwriter = new FileWriter( propFile );
 				props.store( fwriter, "Vault Listener Properties" );
@@ -111,6 +119,8 @@ public class VaultListener implements VoteListener {
 		confirmMsg = props.getProperty( PK_VMSG, confirmMsg );
 		paymentMsg = props.getProperty( PK_PMSG, paymentMsg );
 		debug = Boolean.parseBoolean( props.getProperty( PK_DEBUG, "false" ) );
+		bCastFlag = Boolean.parseBoolean( props.getProperty( PK_BCAST, "true" ) );
+		bCastMsg = props.getProperty( PK_BCASTMSG, bCastMsg );
 	}
 
 
@@ -154,6 +164,9 @@ public class VaultListener implements VoteListener {
 		}
 
 		Player player = plugin.getServer().getPlayerExact( vote.getUsername() );
+		
+		if ( bCastFlag )
+			plugin.getServer().broadcastMessage( insertTokenData( vote, bCastMsg ) );
 
 		// Thank the player, if online
 		if ( player != null ) {
