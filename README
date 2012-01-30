@@ -1,6 +1,6 @@
 DESCRIPTION
 
-VaultListener is a Votifier 1.4 listener class that uses Vault to provide compatibility with
+VaultListener is a Votifier listener class that uses Vault to provide compatibility with
 iConomy 4-6, BOSEconomy 6-7, EssentialsEco, 3Co, MultiCurrency, MineConomy, eWallet, and EconXP.
 
 
