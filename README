@@ -68,13 +68,13 @@ MESSAGE COLORS
 All configurable messages support basic Bukkit chat colors. To change colors, insert the
 appropriate color tag.
 
-     &0 - BLACK          &1 - DARK BLUE      &2 - DARK_GREEN     &3 - DARK AQUA
-     &4 - DARK_RED       &5 - DARK PURPLE    &6 - GOLD           &7 - GRAY
+     &0 - BLACK          &1 - DARK BLUE      &2 - DARK GREEN     &3 - DARK AQUA
+     &4 - DARK RED       &5 - DARK PURPLE    &6 - GOLD           &7 - GRAY
      &8 - DARK GRAY      &9 - BLUE           &A - GREEN          &B - AQUA
      &C - RED            &D - LIGHT PURPLE   &E - YELLOW         &F - WHITE
 
-For example, the following broadcast message would be displayed in green, but display the
-the player's IGN in gold
+For example, the following broadcast message would be displayed in green, but show the
+player's IGN in gold
 
       broadcast_msg=&AThe server was voted for by &6{IGN}&A. Thank you.
 
