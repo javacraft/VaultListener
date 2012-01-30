@@ -1,13 +1,14 @@
 DESCRIPTION
 
 VaultListener is a Votifier listener class that uses Vault to provide compatibility with
-iConomy 4-6, BOSEconomy 6-7, EssentialsEco, 3Co, MultiCurrency, MineConomy, eWallet, and EconXP.
+iConomy 4-6, BOSEconomy 6-7, EssentialsEco, 3Co, MultiCurrency, MineConomy, eWallet, and
+EconXP.
 
 
 REVISION HISTORY
 v1.1.1 - 01/30/12 - Added basic chat color
-v1.1   - 01/29/12 - Added broadcast message option that will send a configurable message to all
-                    online players.
+v1.1   - 01/29/12 - Added broadcast message option that will send a configurable message to
+                    all online players.
 v1.0   - 12/06/11 - Initial release.
 
 
