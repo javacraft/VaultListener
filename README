@@ -6,26 +6,27 @@ iConomy 4-6, BOSEconomy 6-7, EssentialsEco, 3Co, MultiCurrency, MineConomy, eWal
 
 REVISION HISTORY
 
-v1.1 - 01/29/12 - Added broadcast message option that will send a configurable message to all online
-                  players.
+v1.1 - 01/29/12 - Added broadcast message option that will send a configurable message to all
+                  online players.
 v1.0 - 12/06/11 - Initial release.
 
 
 INSTALLATION
- 1) If it is not already installed, download the Vault plugin - http://dev.bukkit.org/server-mods/vault/
+ 1) If it is not already installed, download the Vault plugin:
+    http://dev.bukkit.org/server-mods/vault/
  2) Download a copy of VaultListener.properties and bin/VaultListener.class
- 3) Place a copy of VaultListener.class into the listener folder found inside Votifier's data folder.
-    Note: If you changed the default location of Votifier listeners in its config.yml then you need to
-    put the class there.
- 4) Place a copy of VaultListener.properties inside Votifier's data folder (not inside the listener
-    folder).
+ 3) Place a copy of VaultListener.class into the listener folder found inside Votifier's data
+    folder. Note: If you changed the default location of Votifier listeners in its config.yml
+    then you need to put the class there.
+ 4) Place a copy of VaultListener.properties inside Votifier's data folder (not inside the
+    listener folder).
 
 
 CONFIGURATION
 
-If VaultListener does not find its properties file, it will create a default version, that pays 30
-units of currency whenever a player votes. It also creates a default acknowledgment message, payment
-notification, and broadcast message.
+If VaultListener does not find its properties file, it will create a default version, that
+pays 30 units of currency whenever a player votes. It also creates a default acknowledgment
+message, payment notification, and broadcast message.
 
 
 SAMPLE PROPERTIES FILE
@@ -42,20 +43,22 @@ CONFIGURATION ITEMS
 
 reward_amount - the number of currency units to pay for each vote.
 confirm_msg   - the confirmation message sent to the player (if they are online).
-payment_msg   - payment confirmation message. This message will only be displayed if Vault finds a
-                suitable economy plugin and the player has a valid economy account. If the account
-                does not exist, most economy plugins will create it.
-broadcast     - If set to true, VaultListener will broadcast a configurable message whenever a vote is
-                received for the server.
-broadcast_msg - broadcast message. This message will be displayed if broadcast mode is enabled.
-debug         - If set to true, VaultListener will send a copy of all messages to the server log. Use
-                this to test the format of custom messages. It should be noted that not all voting
-                servers cast a vote during a connection test. Currently, Minestatus is the only one
-                known that sends a mock vote with the IGN of 'Test Notification'. Other voting servers
-                only test the ability to connect, not vote.
+payment_msg   - payment confirmation message. This message will only be displayed if Vault
+                finds a suitable economy plugin and the player has a valid economy account.
+                If the account does not exist, most economy plugins will create it.
+broadcast     - If set to true, VaultListener will broadcast a configurable message whenever
+                a vote is received for the server.
+broadcast_msg - broadcast message. This message will be displayed if broadcast mode is
+                enabled.
+debug         - If set to true, VaultListener will send a copy of all messages to the server
+                log. Use this to test the format of custom messages. It should be noted that
+                not all voting servers cast a vote during a connection test. Currently,
+                Minestatus is the only one known that sends a mock vote with the IGN of
+                'Test Notification'. Other voting servers only test the ability to connect,
+                rather than the voting process.
 
-Please note that the exclamation point ('!') has special meaning in properties files and must be
-escaped if used within a string. For for information on properties file see
+Please note that the exclamation point ('!') has special meaning in properties files and must
+be escaped if used within a string. For for information on properties file see
      http://en.wikipedia.org/wiki/.properties
 
 
