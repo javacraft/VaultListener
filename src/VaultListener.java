@@ -19,6 +19,10 @@ import net.milkbowl.vault.economy.EconomyResponse.ResponseType;
  * 
  * For installation and configuration, please see the accompanying README file.
  * 
+ * The methodology and approach used herein is largely based upon the original iConomyListener written by Blake Beaupin.
+ * VaultListener improves thereupon by incorporating the Vault API, customized/colored messages, additional fault
+ * tolerances and checks, and file resource optimizations to improve the general stability and reportability of this listener.
+ * 
  * @author frelling
  * 
  */
