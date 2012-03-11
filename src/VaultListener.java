@@ -27,7 +27,7 @@ import net.milkbowl.vault.economy.EconomyResponse.ResponseType;
  * 
  */
 public class VaultListener implements VoteListener {
-	private static String	version		= "1.1.1";
+	private static String	version		= "1.1.2";
 	private static Logger	logger		= Logger.getLogger( "VaultListener" );
 	private static String	PROP_FILE	= "VaultListener.properties";
 	private static String	VL_ID		= "[Votifier][VaultListener " + version + "]";
@@ -36,6 +36,25 @@ public class VaultListener implements VoteListener {
 	private static String	PK_AMT		= "reward_amount";
 	private static String	DEF_AMT		= "30.00";
 	private double			amount		= 30.0;
+	private double			paid		= amount;
+	
+	// Reward adornment
+	private static String	PK_PREFIX	= "reward_prefix";
+	private String			prefix		= "";
+	
+	private static String	PK_SUFFIX	= "reward_suffix";
+	private String			suffix		= " USD";
+	
+	// Reward type
+	private static String	PK_TYPE		= "reward_type";
+	private static String	TYPE_FIXED	= "fixed";
+	private static String	TYPE_RATE	= "rate";
+	private static boolean	isRate		= false;
+	
+	// Reward rate
+	private static String	PK_RATE		= "reward_rate";
+	private static String	DEF_RATE	= "0.01";
+	private double			rate		= 0.01;
 
 	// Vote confirmation message
 	private static String	PK_VMSG		= "confirm_msg";
@@ -104,10 +123,15 @@ public class VaultListener implements VoteListener {
 			try {
 				propFile.createNewFile();
 				props.setProperty( PK_AMT, Double.toString( amount ) );
+				props.setProperty( PK_TYPE, TYPE_FIXED );
+				props.setProperty( PK_RATE, Double.toString( rate ) );
 				props.setProperty( PK_VMSG, confirmMsg );
 				props.setProperty( PK_PMSG, paymentMsg );
 				props.setProperty( PK_BCAST, ""+bCastFlag );
 				props.setProperty( PK_BCASTMSG, bCastMsg );
+				props.setProperty( PK_PREFIX, prefix );
+				props.setProperty( PK_SUFFIX, suffix );
+
 
 				FileWriter fwriter = new FileWriter( propFile );
 				props.store( fwriter, "Vault Listener Properties" );
@@ -118,8 +142,31 @@ public class VaultListener implements VoteListener {
 				vlLog( Level.WARNING, "Error creating VaultListener properties." );
 			}
 		}
+		
+		// Read reward amount. Use default amount if illegal number.
+		try {
+			amount = Double.parseDouble( props.getProperty( PK_AMT, DEF_AMT ) );
+		}
+		catch ( NumberFormatException ex ) {
+			amount = Double.parseDouble( DEF_AMT );
+			vlLog( Level.WARNING, "Illegal reward_amount! Using default reward of " + DEF_AMT );
+		}
+		
+		isRate = props.getProperty(  PK_TYPE, TYPE_FIXED ).toLowerCase().equals( TYPE_RATE );
+		
+		// Read reward rate. Use default rate if illegal number.
+		if ( isRate ) {
+			try {
+				rate = Double.parseDouble( props.getProperty( PK_RATE, DEF_RATE ) );
+			}
+			catch ( NumberFormatException ex ) {
+				rate = Double.parseDouble( DEF_RATE );
+				vlLog( Level.WARNING, "Illegal reward_rate! Using default rate of " + DEF_RATE );
+			}
+		}
 
-		amount = Double.parseDouble( props.getProperty( PK_AMT, DEF_AMT ) );
+		prefix = props.getProperty( PK_PREFIX, prefix );
+		suffix = props.getProperty( PK_SUFFIX, suffix );
 		confirmMsg = props.getProperty( PK_VMSG, confirmMsg );
 		paymentMsg = props.getProperty( PK_PMSG, paymentMsg );
 		debug = Boolean.parseBoolean( props.getProperty( PK_DEBUG, "false" ) );
@@ -179,7 +226,20 @@ public class VaultListener implements VoteListener {
 
 		// Try to pay player
 		if ( econ != null ) {
-			EconomyResponse eres = econ.depositPlayer( ign, amount );
+			/*
+			 * If reward_type is 'rate' calculate percentage of player's balance. If it is
+			 * less than the fixed amount, pay the fixed amount instead.
+			 */
+			if ( isRate ) {
+				paid = econ.getBalance( ign ) * rate;
+				if ( paid < amount )
+					paid = amount;
+			}
+			else
+				paid = amount;
+			
+			paid = Math.round( 100.0 * paid ) / 100.0;
+			EconomyResponse eres = econ.depositPlayer( ign, paid );
 			if ( eres.type != ResponseType.FAILURE ) {
 				// Send payment confirmation, if online
 				if ( player != null ) {
@@ -209,7 +269,7 @@ public class VaultListener implements VoteListener {
 	private String insertTokenData( Vote vote, String str ) {
 		String msg = str.replace( "{SERVICE}", vote.getServiceName() );
 		msg = msg.replace( "{IGN}", vote.getUsername() );
-		msg = msg.replace( "{AMOUNT}", Double.toString( amount ) );
+		msg = msg.replace( "{AMOUNT}", prefix + Double.toString( paid ) + suffix );
 		msg = msg.replace( "{ECONOMY}", (econ != null) ? econ.getName()
 				: "UNKNOWN" );
 		msg = msg.replaceAll( "(?i)&([0-9A-F])", "\u00A7$1" );

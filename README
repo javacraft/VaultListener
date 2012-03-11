@@ -1,89 +1,105 @@
 DESCRIPTION
 
-VaultListener is a Votifier listener class that uses Vault to provide compatibility with
-iConomy 4-6, BOSEconomy 6-7, EssentialsEco, 3Co, MultiCurrency, MineConomy, eWallet, and
-EconXP.
+VaultListener is a Votifier listener class that rewards players with currency when
+they vote for your server. It uses Vault to interface with many economy plugins,
+such as iConomy 4-6, BOSEconomy 6-7, EssentialsEco, 3Co, MultiCurrency, MineConomy,
+eWallet, and EconXP.
 
 
 REVISION HISTORY
+v1.1.2 - 03/11/12 - Added reward prefix and suffix properties to set currency names
+                    or symbols.
+                  - Rewards can now be a fixed amount or a percentage of player's
+                    balance. 
 v1.1.1 - 01/30/12 - Added basic chat color support
-v1.1   - 01/29/12 - Added broadcast message option that will send a configurable message to
-                    all online players.
+v1.1   - 01/29/12 - Added broadcast message option that will send a configurable
+                    message to all online players.
 v1.0   - 12/06/11 - Initial release.
 
 
 INSTALLATION
- 1) If it is not already installed, download the Vault plugin:
-    http://dev.bukkit.org/server-mods/vault/
- 2) Download a copy of VaultListener.properties and bin/VaultListener.class
- 3) Place a copy of VaultListener.class into the listener folder found inside Votifier's data
-    folder. Note: If you changed the default location of Votifier listeners in its config.yml
-    then you need to put the class there.
- 4) Place a copy of VaultListener.properties inside Votifier's data folder (not inside the
-    listener folder).
+ 1) If it is not already installed, download:
+    Vault: http://dev.bukkit.org/server-mods/vault/
+    Votifier: http://dev.bukkit.org/server-mods/votifier/
+ 2) Download VaultListener.class
+ 3) Place VaultListener.class into Votifier's listener folder
+    (e.g. plugins/Votifier/listeners)
 
 
 CONFIGURATION
 
-If VaultListener does not find its properties file, it will create a default version, that
-pays 30 units of currency whenever a player votes. It also creates a default acknowledgment
-message, payment notification, and broadcast message.
+VaultListener is configured through its VaultListener.properties file found in the
+Votifier directory (not the listeners directory therein). If one does not exist,
+VaultListener will create a default configuration.
 
-
-SAMPLE PROPERTIES FILE
+DEFAULT PROPERTIES
 
 reward_amount=30.0
+reward_type=fixed
+reward_rate=0.01
+reward_prefix=
+reward_suffix=\ USD
 confirm_msg=Thanks for voting on {SERVICE}\!
 payment_msg={AMOUNT} has been added to your {ECONOMY} balance.
 broadcast=true
 broadcast_msg=The server was voted for by {IGN}\!
 debug=false
 
+-----------------------------------------------------------------------------------
 
 CONFIGURATION ITEMS
 
 reward_amount - the number of currency units to pay for each vote.
+reward_type   - fixed : every player receives a fixed amount set by reward_amount
+                rate: player reward is a percentage (given by reward_rate) of their
+                current balance or reward_amount, which ever one is greater.
+reward_rate   - the reate used to calculate reward when reward_type=rate.
+                e.g. 1.0 = 100%, 0.50 = 50%, 0.0075 = 0.75%
 confirm_msg   - the confirmation message sent to the player (if they are online).
-payment_msg   - payment confirmation message. This message will only be displayed if Vault
-                finds a suitable economy plugin and the player has a valid economy account.
-                If the account does not exist, most economy plugins will create it.
-broadcast     - If set to true, VaultListener will broadcast a configurable message whenever
-                a vote is received for the server.
-broadcast_msg - broadcast message. This message will be displayed if broadcast mode is
-                enabled.
-debug         - If set to true, VaultListener will send a copy of all messages to the server
-                log. Use this to test the format of custom messages. It should be noted that
-                not all voting servers cast a vote during a connection test. Currently,
-                Minestatus is the only one known that sends a mock vote with the IGN of
-                'Test Notification'. Other voting servers only test the ability to connect,
-                rather than the voting process.
+payment_msg   - payment confirmation message. This message will only be displayed
+                if Vault finds a suitable economy plugin and the player has a valid
+                economy account. If the account does not exist, most economy
+                plugins will create it.
+broadcast     - If set to true, VaultListener will broadcast a configurable message
+                whenever a vote is received for the server.
+broadcast_msg - broadcast message. This message will be displayed if broadcast mode
+                is enabled.
+debug         - If set to true, VaultListener will send a copy of all messages to
+                the server log. Use this to test the format of custom messages. It
+                should be noted that not all voting servers cast a vote during a
+                connection test. Currently, Minestatus is the only one known that
+                sends a mock vote with the IGN of 'Test Notification'. Other voting
+                servers only test the ability to connect, rather than the voting
+                process.
 
-Please note that the exclamation point ('!') has special meaning in properties files and must
-be escaped if used within a string. For for information on properties file see
-     http://en.wikipedia.org/wiki/.properties
+Please note that the exclamation point ('!') has special meaning in properties
+files and must be escaped if used within a string. Likewise, leading spaces must
+also be escaped (see reward_suffix above). For for information on properties file
+see http://en.wikipedia.org/wiki/.properties
      
      
 MESSAGE COLORS
 
-All configurable messages support basic Bukkit chat colors. To change colors, insert the
-appropriate color tag.
+All configurable messages support basic Bukkit chat colors. To change colors,
+insert the appropriate color tag.
 
      &0 - BLACK          &1 - DARK BLUE      &2 - DARK GREEN     &3 - DARK AQUA
      &4 - DARK RED       &5 - DARK PURPLE    &6 - GOLD           &7 - GRAY
      &8 - DARK GRAY      &9 - BLUE           &A - GREEN          &B - AQUA
      &C - RED            &D - LIGHT PURPLE   &E - YELLOW         &F - WHITE
 
-For example, the following broadcast message would be displayed in green, but show the
-player's IGN in gold
+For example, the following broadcast message would be displayed in green, but show
+the player's IGN in gold
 
       broadcast_msg=&AThe server was voted for by &6{IGN}&A. Thank you.
 
 
 MESSAGE TOKENS
 
-Custom message can include four different tokens signified by curly brackets. They are:
+Custom message can include four different tokens signified by curly brackets. They
+are:
 
-{AMOUNT}  - the configured amount to be paid for each vote.
+{AMOUNT}  - the reward amount paid adorned by reward_prefix & reward_suffix
 {ECONOMY} - the name of the economy plugin used to make payments.
 {SERVICE} - the name of the voting server, e.g. Minestatus
 {IGN}     - The in-game-name used by the voter.
