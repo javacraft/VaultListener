@@ -27,7 +27,7 @@ import net.milkbowl.vault.economy.EconomyResponse.ResponseType;
  * 
  */
 public class VaultListener implements VoteListener {
-	private static String	version		= "1.1.2";
+	private static String	version		= "1.1.3";
 	private static Logger	logger		= Logger.getLogger( "VaultListener" );
 	private static String	PROP_FILE	= "VaultListener.properties";
 	private static String	VL_ID		= "[Votifier][VaultListener " + version + "]";
