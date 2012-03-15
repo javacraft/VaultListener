@@ -20,8 +20,8 @@ import net.milkbowl.vault.economy.EconomyResponse.ResponseType;
  * For installation and configuration, please see the accompanying README file.
  * 
  * The methodology and approach used herein is largely based upon the original iConomyListener written by Blake Beaupin.
- * VaultListener improves thereupon by incorporating the Vault API, customized/colored messages, additional fault
- * tolerances and checks, and file resource optimizations to improve the general stability and reportability of this listener.
+ * VaultListener improves thereupon by incorporating the Vault API, customized/colored messages, additional fault tolerances
+ * and checks, and file resource optimizations to improve the general stability and reportability of this listener.
  * 
  * @author frelling
  * 
@@ -37,20 +37,20 @@ public class VaultListener implements VoteListener {
 	private static String	DEF_AMT		= "30.00";
 	private double			amount		= 30.0;
 	private double			paid		= amount;
-	
+
 	// Reward adornment
 	private static String	PK_PREFIX	= "reward_prefix";
 	private String			prefix		= "";
-	
+
 	private static String	PK_SUFFIX	= "reward_suffix";
 	private String			suffix		= " USD";
-	
+
 	// Reward type
 	private static String	PK_TYPE		= "reward_type";
 	private static String	TYPE_FIXED	= "fixed";
 	private static String	TYPE_RATE	= "rate";
 	private static boolean	isRate		= false;
-	
+
 	// Reward rate
 	private static String	PK_RATE		= "reward_rate";
 	private static String	DEF_RATE	= "0.01";
@@ -67,7 +67,7 @@ public class VaultListener implements VoteListener {
 	// Debug Flag
 	private static String	PK_DEBUG	= "debug";
 	private boolean			debug		= false;
-	
+
 	// Broadcast message
 	private static String	PK_BCAST	= "broadcast";
 	private boolean			bCastFlag	= true;
@@ -88,7 +88,7 @@ public class VaultListener implements VoteListener {
 			initializeEconomyAPI();
 		}
 		else
-			vlLog( Level.SEVERE, "Cannot find reference to Votifier plugin!" );
+			log( Level.SEVERE, "Cannot find reference to Votifier plugin!" );
 	}
 
 
@@ -110,7 +110,7 @@ public class VaultListener implements VoteListener {
 				freader.close();
 			}
 			catch ( IOException ex ) {
-				vlLog( Level.WARNING,
+				log( Level.WARNING,
 						"Error loading VaultListener properties. Using default messages and reward of "
 								+ DEF_AMT );
 			}
@@ -119,7 +119,7 @@ public class VaultListener implements VoteListener {
 			/*
 			 * Create property file if it wasn't found.
 			 */
-			vlLogInfo( "No VaultListener properties file found, creating default file." );
+			logInfo( "No VaultListener properties file found, creating default file." );
 			try {
 				propFile.createNewFile();
 				props.setProperty( PK_AMT, Double.toString( amount ) );
@@ -127,11 +127,11 @@ public class VaultListener implements VoteListener {
 				props.setProperty( PK_RATE, Double.toString( rate ) );
 				props.setProperty( PK_VMSG, confirmMsg );
 				props.setProperty( PK_PMSG, paymentMsg );
-				props.setProperty( PK_BCAST, ""+bCastFlag );
+				props.setProperty( PK_BCAST, "" + bCastFlag );
 				props.setProperty( PK_BCASTMSG, bCastMsg );
 				props.setProperty( PK_PREFIX, prefix );
 				props.setProperty( PK_SUFFIX, suffix );
-
+				props.setProperty( PK_DEBUG, "" + debug );
 
 				FileWriter fwriter = new FileWriter( propFile );
 				props.store( fwriter, "Vault Listener Properties" );
@@ -139,21 +139,21 @@ public class VaultListener implements VoteListener {
 
 			}
 			catch ( IOException ex ) {
-				vlLog( Level.WARNING, "Error creating VaultListener properties." );
+				log( Level.WARNING, "Error creating VaultListener properties." );
 			}
 		}
-		
+
 		// Read reward amount. Use default amount if illegal number.
 		try {
 			amount = Double.parseDouble( props.getProperty( PK_AMT, DEF_AMT ) );
 		}
 		catch ( NumberFormatException ex ) {
 			amount = Double.parseDouble( DEF_AMT );
-			vlLog( Level.WARNING, "Illegal reward_amount! Using default reward of " + DEF_AMT );
+			log( Level.WARNING, "Illegal reward_amount! Using default reward of " + DEF_AMT );
 		}
-		
-		isRate = props.getProperty(  PK_TYPE, TYPE_FIXED ).toLowerCase().equals( TYPE_RATE );
-		
+
+		isRate = props.getProperty( PK_TYPE, TYPE_FIXED ).toLowerCase().equals( TYPE_RATE );
+
 		// Read reward rate. Use default rate if illegal number.
 		if ( isRate ) {
 			try {
@@ -161,7 +161,7 @@ public class VaultListener implements VoteListener {
 			}
 			catch ( NumberFormatException ex ) {
 				rate = Double.parseDouble( DEF_RATE );
-				vlLog( Level.WARNING, "Illegal reward_rate! Using default rate of " + DEF_RATE );
+				log( Level.WARNING, "Illegal reward_rate! Using default rate of " + DEF_RATE );
 			}
 		}
 
@@ -185,20 +185,20 @@ public class VaultListener implements VoteListener {
 		try {
 			economyProvider = plugin.getServer().getServicesManager()
 					.getRegistration( net.milkbowl.vault.economy.Economy.class );
+
+			if ( economyProvider != null ) {
+				econ = economyProvider.getProvider();
+				logInfo( "Using economy plugin: " + econ.getName() );
+			}
+			else {
+				econ = null;
+				log( Level.WARNING,
+						"Vault cannot detect a valid economy plugin. No payments will be made!" );
+			}
 		}
 		catch ( NoClassDefFoundError ex ) {
-			vlLog( Level.SEVERE,
+			log( Level.SEVERE,
 					"Could not find Vault API. Please make sure Vault is installed and enabled!" );
-		}
-
-		if ( economyProvider != null ) {
-			econ = economyProvider.getProvider();
-			vlLogInfo( "Using economy plugin: " + econ.getName() );
-		}
-		else {
-			econ = null;
-			vlLog( Level.WARNING,
-					"Vault cannot detect a valid economy plugin. No payments will be made!" );
 		}
 	}
 
@@ -206,60 +206,87 @@ public class VaultListener implements VoteListener {
 	@Override
 	public void voteMade( Vote vote ) {
 		String ign = vote.getUsername();
-		vlLogInfo( ign );
+		logInfo( ign );
 
 		if ( debug ) {
-			vlLogInfo( "Vote notification received, dumping messages..." );
-			vlLogInfo( insertTokenData( vote, confirmMsg ) );
-			vlLogInfo( insertTokenData( vote, paymentMsg ) );
+			voteRecordDump( vote );
+			configDump();
 		}
 
-		Player player = plugin.getServer().getPlayerExact( vote.getUsername() );
-		
-		if ( bCastFlag )
-			plugin.getServer().broadcastMessage( insertTokenData( vote, bCastMsg ) );
-
-		// Thank the player, if online
-		if ( player != null ) {
-			player.sendMessage( insertTokenData( vote, confirmMsg ) );
-		}
-
-		// Try to pay player
+		// Try to pay vote IGN
 		if ( econ != null ) {
+			logDebug( "Using " + econ.getName() + " to pay IGN -> " + ign );
+
 			/*
-			 * If reward_type is 'rate' calculate percentage of player's balance. If it is
-			 * less than the fixed amount, pay the fixed amount instead.
+			 * If reward_type is 'rate' calculate percentage of player's balance. If it is less than the fixed amount, pay
+			 * the fixed amount instead.
 			 */
 			if ( isRate ) {
-				paid = econ.getBalance( ign ) * rate;
-				if ( paid < amount )
+				double balance = econ.getBalance( ign );
+				logDebug( "IGN balance (if 0.00, player may not have economy account): " + balance );
+
+				paid = balance * rate;
+				logDebug( "Calculated reward: " + paid );
+
+				if ( paid < amount ) {
 					paid = amount;
-			}
-			else
-				paid = amount;
-			
-			paid = Math.round( 100.0 * paid ) / 100.0;
-			EconomyResponse eres = econ.depositPlayer( ign, paid );
-			if ( eres.type != ResponseType.FAILURE ) {
-				// Send payment confirmation, if online
-				if ( player != null ) {
-					player.sendMessage( insertTokenData( vote, paymentMsg ) );
+					logDebug( "Calculated reward less than fixed amount. Paying fixed amount: " + paid );
 				}
 			}
 			else {
-				vlLogInfo( eres.errorMessage );
+				paid = amount;
+				logDebug( "Paying fixed amount: " + paid );
 			}
+
+			paid = Math.round( 100.0 * paid ) / 100.0;
+			EconomyResponse eres = econ.depositPlayer( ign, paid );
+			if ( eres.type == ResponseType.FAILURE )
+				logInfo( eres.errorMessage );
 		}
+		else {
+			paid = 0;
+			logDebug( "No economy plugin found" );
+		}
+
+		Player player = plugin.getServer().getPlayerExact( ign );
+
+		// Thank player, if online
+		if ( player != null ) {
+			player.sendMessage( insertTokenData( vote, confirmMsg ) );
+			logDebug( "Found online player -> " + player.getName() );
+			logDebug( "Confirmation message -> " + insertTokenData( vote, confirmMsg ) );
+			if ( econ != null ) {
+				player.sendMessage( insertTokenData( vote, paymentMsg ) );
+				logDebug( "Payment message -> " + insertTokenData( vote, paymentMsg ) );
+			}
+			else
+				logDebug( "No economy plugin found. No payment message sent." );
+		}
+		else
+			logDebug( "No online player found for -> " + ign );
+
+		if ( bCastFlag ) {
+			plugin.getServer().broadcastMessage( insertTokenData( vote, bCastMsg ) );
+			logDebug( "Broadcast message -> " + insertTokenData( vote, bCastMsg ) );
+		}
+		else
+			logDebug( "Broadcast disabled. No broadcast message sent." );
 	}
 
 
-	private static void vlLog( Level lvl, String msg ) {
+	private void log( Level lvl, String msg ) {
 		logger.log( lvl, VL_ID + " " + msg );
 	}
 
 
-	private static void vlLogInfo( String msg ) {
-		vlLog( Level.INFO, msg );
+	private void logInfo( String msg ) {
+		log( Level.INFO, msg );
+	}
+
+
+	private void logDebug( String msg ) {
+		if ( debug )
+			logInfo( msg );
 	}
 
 
@@ -274,6 +301,29 @@ public class VaultListener implements VoteListener {
 				: "UNKNOWN" );
 		msg = msg.replaceAll( "(?i)&([0-9A-F])", "\u00A7$1" );
 		return msg;
+	}
+
+
+	private void voteRecordDump( Vote vote ) {
+		logInfo( "Vote notification received. Vote record dump..." );
+		logInfo( "Voting service name -> " + vote.getServiceName() );
+		logInfo( "Voting service address -> " + vote.getAddress() );
+		logInfo( "Voting IGN -> " + vote.getUsername() );
+		logInfo( "Voting timestamp -> " + vote.getTimeStamp() );
+	}
+
+
+	private void configDump() {
+		logInfo( PK_AMT + " -> " + Double.toString( amount ) );
+		logInfo( PK_TYPE + " -> " + TYPE_FIXED );
+		logInfo( PK_RATE + " -> " + Double.toString( rate ) );
+		logInfo( PK_VMSG + " -> " + confirmMsg );
+		logInfo( PK_PMSG + " -> " + paymentMsg );
+		logInfo( PK_BCAST + " -> " + bCastFlag );
+		logInfo( PK_BCASTMSG + " -> " + bCastMsg );
+		logInfo( PK_PREFIX + " -> " + prefix );
+		logInfo( PK_SUFFIX + " -> " + suffix );
+		logInfo( PK_DEBUG + " -> " + debug );
 	}
 
 }
