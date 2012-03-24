@@ -27,7 +27,7 @@ import net.milkbowl.vault.economy.EconomyResponse.ResponseType;
  * 
  */
 public class VaultListener implements VoteListener {
-	private static String	version		= "1.1.3";
+	private static String	version		= "1.1.4";
 	private static Logger	logger		= Logger.getLogger( "VaultListener" );
 	private static String	PROP_FILE	= "VaultListener.properties";
 	private static String	VL_ID		= "[Votifier][VaultListener " + version + "]";
@@ -49,7 +49,7 @@ public class VaultListener implements VoteListener {
 	private static String	PK_TYPE		= "reward_type";
 	private static String	TYPE_FIXED	= "fixed";
 	private static String	TYPE_RATE	= "rate";
-	private static boolean	isRate		= false;
+	private boolean	isRate				= false;
 
 	// Reward rate
 	private static String	PK_RATE		= "reward_rate";
@@ -315,7 +315,7 @@ public class VaultListener implements VoteListener {
 
 	private void configDump() {
 		logInfo( PK_AMT + " -> " + Double.toString( amount ) );
-		logInfo( PK_TYPE + " -> " + TYPE_FIXED );
+		logInfo( PK_TYPE + " -> " + (isRate ? TYPE_RATE : TYPE_FIXED) );
 		logInfo( PK_RATE + " -> " + Double.toString( rate ) );
 		logInfo( PK_VMSG + " -> " + confirmMsg );
 		logInfo( PK_PMSG + " -> " + paymentMsg );
