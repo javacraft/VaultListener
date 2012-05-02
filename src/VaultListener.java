@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.Properties;
 import java.util.logging.*;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import com.vexsoftware.votifier.Votifier;
@@ -43,7 +44,7 @@ public class VaultListener implements VoteListener {
 	private String			prefix		= "";
 
 	private static String	PK_SUFFIX	= "reward_suffix";
-	private String			suffix		= " USD";
+	private String			suffix		= "";
 
 	// Reward type
 	private static String	PK_TYPE		= "reward_type";
@@ -252,12 +253,14 @@ public class VaultListener implements VoteListener {
 
 		// Thank player, if online
 		if ( player != null ) {
-			player.sendMessage( insertTokenData( vote, confirmMsg ) );
+			sendMessage( player, vote, confirmMsg );
 			logDebug( "Found online player -> " + player.getName() );
-			logDebug( "Confirmation message -> " + insertTokenData( vote, confirmMsg ) );
+			for ( String s : insertTokenData( vote, confirmMsg ) )
+				logDebug( "Confirmation message -> " + s );
 			if ( econ != null ) {
-				player.sendMessage( insertTokenData( vote, paymentMsg ) );
-				logDebug( "Payment message -> " + insertTokenData( vote, paymentMsg ) );
+				sendMessage( player, vote, paymentMsg );
+				for ( String s : insertTokenData( vote, paymentMsg ) )
+					logDebug( "Payment message -> " + s );
 			}
 			else
 				logDebug( "No economy plugin found. No payment message sent." );
@@ -266,8 +269,9 @@ public class VaultListener implements VoteListener {
 			logDebug( "No online player found for -> " + ign );
 
 		if ( bCastFlag ) {
-			plugin.getServer().broadcastMessage( insertTokenData( vote, bCastMsg ) );
-			logDebug( "Broadcast message -> " + insertTokenData( vote, bCastMsg ) );
+			broadcastMessage( plugin.getServer(), vote, bCastMsg );
+			for ( String s : insertTokenData( vote, bCastMsg ) )
+				logDebug( "Broadcast message -> " + s );
 		}
 		else
 			logDebug( "Broadcast disabled. No broadcast message sent." );
@@ -289,18 +293,29 @@ public class VaultListener implements VoteListener {
 			logInfo( msg );
 	}
 
+	
+	private void sendMessage( Player player, Vote vote, String msg ) {
+		for ( String s : insertTokenData( vote, msg ) )
+			player.sendMessage( s );
+	}
+	
+	private void broadcastMessage( Server server, Vote vote, String msg ) {
+		for ( String s : insertTokenData( vote, msg ) )
+			server.broadcastMessage( s );
+	}
 
 	/*
-	 * Replace token values in given string with actual data.
+	 * Replace token values in given string with actual data and split resulting string in
+	 * multi-lines.
 	 */
-	private String insertTokenData( Vote vote, String str ) {
+	private String[] insertTokenData( Vote vote, String str ) {
 		String msg = str.replace( "{SERVICE}", vote.getServiceName() );
 		msg = msg.replace( "{IGN}", vote.getUsername() );
 		msg = msg.replace( "{AMOUNT}", prefix + Double.toString( paid ) + suffix );
 		msg = msg.replace( "{ECONOMY}", (econ != null) ? econ.getName()
 				: "UNKNOWN" );
 		msg = msg.replaceAll( "(?i)&([0-9A-F])", "\u00A7$1" );
-		return msg;
+		return msg.split( "\n" );
 	}
 
 
