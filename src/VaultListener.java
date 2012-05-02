@@ -314,7 +314,7 @@ public class VaultListener implements VoteListener {
 		msg = msg.replace( "{AMOUNT}", prefix + Double.toString( paid ) + suffix );
 		msg = msg.replace( "{ECONOMY}", (econ != null) ? econ.getName()
 				: "UNKNOWN" );
-		msg = msg.replaceAll( "(?i)&([0-9A-F])", "\u00A7$1" );
+		msg = msg.replaceAll( "(?i)&([0-9A-FK-OR])", "\u00A7$1" );
 		return msg.split( "\n" );
 	}
 
